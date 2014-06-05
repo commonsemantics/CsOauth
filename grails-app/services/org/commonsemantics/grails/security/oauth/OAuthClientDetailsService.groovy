@@ -23,7 +23,6 @@ class OAuthClientDetailsService implements ClientDetailsService {
 		if(!clientId.equals(requestClientId)) {
 			// override the username and search using the actual client id
 			BaseClientDetails client = findSystemApiByClientId(requestClientId);
-			client.setClientId(clientId);
 			return client;
 		}
 		
@@ -45,7 +44,7 @@ class OAuthClientDetailsService implements ClientDetailsService {
 			
 			BaseClientDetails client = new BaseClientDetails( );
 			client.setClientId(system.getShortName( ))
-			client.setClientSecret(system.getApikey( ));
+			client.setClientSecret(system.getSecretkey( ));
 			
 			// add the default grants
 			Collection<String> grants = new ArrayList<String>( );
