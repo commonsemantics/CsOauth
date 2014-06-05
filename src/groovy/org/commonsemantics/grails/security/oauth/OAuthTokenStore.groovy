@@ -10,6 +10,8 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /** Class to store the authorised access and refresh tokens in the database
  * referencing both the user the token authorises and the system API that can
@@ -57,7 +59,7 @@ class OAuthTokenStore implements TokenStore {
 	public OAuth2AccessToken getAccessToken(final OAuth2Authentication authentication) {
 		// search the database for the links
 		User user = User.findByUsername(authentication.getName( ));
-		SystemApi system = SystemApi.findByShortName(authentication.getAuthorizationRequest( ).getClientId( ));
+		SystemApi system = SystemApi.findByShortName(getRequestClientId( ));
 		
 		// find the access token
 		OAuthStoredAccessToken accessToken = OAuthStoredAccessToken.findBySystemAndUser(system, user);
@@ -153,7 +155,7 @@ class OAuthTokenStore implements TokenStore {
 		
 		// search the database for the links
 		User user = User.findByUsername(authentication.getName( ));
-		SystemApi system = SystemApi.findByShortName(authentication.getAuthorizationRequest( ).getClientId( ));
+		SystemApi system = SystemApi.findByShortName(getRequestClientId( ));
 		
 		// create the database token
 		OAuthStoredAccessToken dbToken = new OAuthStoredAccessToken(
@@ -180,7 +182,7 @@ class OAuthTokenStore implements TokenStore {
 	public void storeRefreshToken(final OAuth2RefreshToken token, final OAuth2Authentication authentication) {
 		// find the access token
 		User user = User.findByUsername(authentication.getName( ));
-		SystemApi system = SystemApi.findByShortName(authentication.getAuthorizationRequest( ).getClientId( ));
+		SystemApi system = SystemApi.findByShortName(getRequestClientId( ));
 		OAuthStoredAccessToken accessToken = OAuthStoredAccessToken.findBySystemAndUser(system, user);
 		storeRefreshToken(token, accessToken, system, user);
 	}
@@ -234,6 +236,22 @@ class OAuthTokenStore implements TokenStore {
 	private OAuth2RefreshToken createRefreshToken(final OAuthStoredRefreshToken dbToken) {
 		DefaultOAuth2RefreshToken token = new DefaultOAuth2RefreshToken(dbToken.getToken( ));
 		return token;
+	}
+	
+	/** Extract the client id value from the original request.
+	 * @return The client id extracted from the original request. */
+	private String getRequestClientId( ) {
+		RequestAttributes attributes = RequestContextHolder.getRequestAttributes( );
+		String queryStr = (String)attributes.getAttribute("javax.servlet.forward.query_string", RequestAttributes.SCOPE_REQUEST);
+		String[ ] parts = queryStr.split("&");
+		for(String s : parts) {
+			if(s.contains("client_id")) {
+				parts = s.split("=");
+				return parts[1].trim( );
+			}
+		}
+		
+		return null;
 	}
 
 };
