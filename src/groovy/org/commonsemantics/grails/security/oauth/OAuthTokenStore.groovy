@@ -119,7 +119,7 @@ class OAuthTokenStore implements TokenStore {
 
 	@Override
 	public void removeAccessToken(final OAuth2AccessToken tokenValue) {
-		OAuthStoredAccessToken token = OAuthStoredAccessToken.findByToken(tokenValue);
+		OAuthStoredAccessToken token = OAuthStoredAccessToken.findByToken(tokenValue.getValue( ));
 		if(token != null) {
 			token.delete( );
 		}
