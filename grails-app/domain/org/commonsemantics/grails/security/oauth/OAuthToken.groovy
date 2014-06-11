@@ -1,5 +1,7 @@
 package org.commonsemantics.grails.security.oauth
 
+import java.util.Date;
+
 import org.commonsemantics.grails.systems.model.SystemApi;
 import org.commonsemantics.grails.users.model.User;
 
@@ -22,10 +24,14 @@ abstract class OAuthToken {
 	/** The actual authentication token. */
 	String token;
 	
+	/** The expiration date for the access token. */
+	Date expiration;
+	
 	static constraints = {
 		id maxSize: ID_MAX_SIZE
 	
 		token blank: false, unique: true, maxSize: ID_MAX_SIZE
+		expiration nullable: true
 	}
 	
 	static mapping = {

@@ -45,6 +45,8 @@ class OAuthClientDetailsService implements ClientDetailsService {
 			BaseClientDetails client = new BaseClientDetails( );
 			client.setClientId(system.getShortName( ))
 			client.setClientSecret(system.getSecretkey( ));
+			client.setAccessTokenValiditySeconds(grailsApplication.config.grails.plugin.springsecurity.oauthProvider.defaultClientConfig.accessTokenValiditySeconds);
+			client.setRefreshTokenValiditySeconds(grailsApplication.config.grails.plugin.springsecurity.oauthProvider.defaultClientConfig.refreshTokenValiditySeconds);
 			
 			// add the default grants
 			Collection<String> grants = new ArrayList<String>( );

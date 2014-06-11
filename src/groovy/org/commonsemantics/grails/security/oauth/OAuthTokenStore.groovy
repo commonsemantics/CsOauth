@@ -200,6 +200,7 @@ class OAuthTokenStore implements TokenStore {
 			user: user,
 			system: system,
 			token: token.getValue( ),
+			expiration: token.getExpiration( ),
 			accessToken: accessToken
 		);
 	
@@ -235,6 +236,9 @@ class OAuthTokenStore implements TokenStore {
 	 * @return The OAuth2RefreshToken. */
 	private OAuth2RefreshToken createRefreshToken(final OAuthStoredRefreshToken dbToken) {
 		DefaultOAuth2RefreshToken token = new DefaultOAuth2RefreshToken(dbToken.getToken( ));
+		if(dbToken.getExpiration( ) != null) {
+			token.setExpiration(dbToken.getExpiration( ));
+		}
 		return token;
 	}
 	
