@@ -32,5 +32,6 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 
 // For OAuth add to the existing Auth Providers
 grails.plugin.springsecurity.providerNames = [
+	"daoAuthenticationProvider",
 	"clientCredentialsAuthenticationProvider"
 ]
