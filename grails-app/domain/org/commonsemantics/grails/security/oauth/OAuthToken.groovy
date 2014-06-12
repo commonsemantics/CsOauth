@@ -24,14 +24,13 @@ abstract class OAuthToken {
 	/** The actual authentication token. */
 	String token;
 	
-	/** The expiration date for the access token. */
-	Date expiration;
+	/** The serialised authentication object. */
+	byte[ ] authentication;
 	
 	static constraints = {
 		id maxSize: ID_MAX_SIZE
-	
 		token blank: false, unique: true, maxSize: ID_MAX_SIZE
-		expiration nullable: true
+		authentication blank: false, maxSize: 65535
 	}
 	
 	static mapping = {

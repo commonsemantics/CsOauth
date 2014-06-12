@@ -103,7 +103,7 @@ class OAuthTokenStore implements TokenStore {
 		}
 		
 		// extract the OAuth2Authentication
-		return SerializationUtils.deserialize(refreshToken.getAccessToken( ).getAuthentication( ));
+		return SerializationUtils.deserialize(refreshToken.getAuthentication( ));
 	}
 
 	@Override
@@ -118,8 +118,19 @@ class OAuthTokenStore implements TokenStore {
 	}
 
 	@Override
+	@Transactional
 	public void removeAccessToken(final OAuth2AccessToken tokenValue) {
 		OAuthStoredAccessToken token = OAuthStoredAccessToken.findByToken(tokenValue.getValue( ));
+		
+		// find refresh tokens, and delete the access token reference
+		OAuthStoredRefreshToken refreshToken = OAuthStoredRefreshToken.findByAccessToken(token);
+		if(refreshToken != null) {
+			refreshToken.setAccessToken(null);
+			if(!refreshToken.save(flush: true)) {
+				System.out.println(refreshToken.errors.allErrors);
+			}
+		}
+		
 		if(token != null) {
 			token.delete( );
 		}
@@ -184,11 +195,11 @@ class OAuthTokenStore implements TokenStore {
 		User user = User.findByUsername(authentication.getName( ));
 		SystemApi system = SystemApi.findByShortName(getRequestClientId( ));
 		OAuthStoredAccessToken accessToken = OAuthStoredAccessToken.findBySystemAndUser(system, user);
-		storeRefreshToken(token, accessToken, system, user);
+		storeRefreshToken(token, accessToken, system, user, authentication);
 	}
 
 	public void storeRefreshToken(final OAuth2RefreshToken token, final OAuthStoredAccessToken accessToken,
-		final SystemApi system, final User user)
+		final SystemApi system, final User user, final OAuth2Authentication authentication)
 	{
 		// delete the token if it already exists
 		if(readRefreshToken(token.getValue( ))) {
@@ -200,7 +211,7 @@ class OAuthTokenStore implements TokenStore {
 			user: user,
 			system: system,
 			token: token.getValue( ),
-			expiration: token.getExpiration( ),
+			authentication: SerializationUtils.serialize(authentication),
 			accessToken: accessToken
 		);
 	
@@ -236,9 +247,6 @@ class OAuthTokenStore implements TokenStore {
 	 * @return The OAuth2RefreshToken. */
 	private OAuth2RefreshToken createRefreshToken(final OAuthStoredRefreshToken dbToken) {
 		DefaultOAuth2RefreshToken token = new DefaultOAuth2RefreshToken(dbToken.getToken( ));
-		if(dbToken.getExpiration( ) != null) {
-			token.setExpiration(dbToken.getExpiration( ));
-		}
 		return token;
 	}
 	

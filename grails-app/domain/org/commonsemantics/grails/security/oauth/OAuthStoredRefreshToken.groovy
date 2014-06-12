@@ -6,7 +6,7 @@ class OAuthStoredRefreshToken extends OAuthToken {
 
 	/** The access token this refresh token belongs to. */
 	OAuthStoredAccessToken accessToken;
-	
+
 	static constraints = {
 		accessToken nullable: true, blank: true, unique: true
 	}
