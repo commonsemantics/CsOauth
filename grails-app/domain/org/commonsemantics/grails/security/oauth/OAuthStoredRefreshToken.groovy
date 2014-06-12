@@ -8,7 +8,7 @@ class OAuthStoredRefreshToken extends OAuthToken {
 	OAuthStoredAccessToken accessToken;
 
 	static constraints = {
-		accessToken nullable: true, blank: true, unique: true
+		accessToken nullable: true, blank: true
 	}
 
 };

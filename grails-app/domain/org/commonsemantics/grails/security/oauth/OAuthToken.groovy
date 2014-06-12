@@ -29,7 +29,7 @@ abstract class OAuthToken {
 	
 	static constraints = {
 		id maxSize: ID_MAX_SIZE
-		token blank: false, unique: true, maxSize: ID_MAX_SIZE
+		token blank: false, maxSize: ID_MAX_SIZE
 		authentication blank: false, maxSize: 65535
 	}
 	

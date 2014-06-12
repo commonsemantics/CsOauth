@@ -140,7 +140,7 @@ class OAuthTokenStore implements TokenStore {
 	public void removeAccessTokenUsingRefreshToken(final OAuth2RefreshToken token) {
 		OAuthStoredRefreshToken refreshToken = OAuthStoredRefreshToken.findByToken(token.getValue( ));
 		if(refreshToken != null) {
-			OAuthStoredAccessToken accessToken = refreshToken.getAccessToken( );
+			OAuthStoredAccessToken accessToken = OAuthStoredAccessToken.findById(refreshToken.getAccessTokenId( ));
 			if(accessToken != null) {
 				accessToken.delete( );
 				refreshToken.delete( );
