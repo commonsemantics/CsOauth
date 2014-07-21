@@ -1,6 +1,5 @@
 package org.commonsemantics.grails.security.oauth;
 
-import org.apache.commons.codec.binary.Base64;
 import org.commonsemantics.grails.systems.model.SystemApi;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,11 +19,9 @@ class OAuthClientCredentialsAuthenticationProvider implements AuthenticationProv
 	public Authentication authenticate(final Authentication authentication)
 			throws AuthenticationException
 	{
-		// extract the HTTP Basic value and decode
+		// extract the HTTP Basic credentials
 		String clientId = authentication.getName( );
 		String secret = authentication.getCredentials( ).toString( );
-		byte[ ] decoded = Base64.decodeBase64(secret);
-		secret = new String(decoded, "UTF-8");
 		
 		// find the System
 		SystemApi system = SystemApi.findByShortName(clientId);
