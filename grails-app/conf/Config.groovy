@@ -27,11 +27,24 @@ log4j = {
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**'						: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_USER'],
 	'/oauth/authorize.dispatch'	: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_USER'],
-	'/oauth/token.dispatch'		: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_USER']
+	'/oauth/token.dispatch'		: ['ROLE_CLIENT']
 ]
 
 // For OAuth add to the existing Auth Providers
 grails.plugin.springsecurity.providerNames = [
 	"daoAuthenticationProvider",
+	"customAuthenticationProvider",
 	"clientCredentialsAuthenticationProvider"
+]
+
+// Enable client credentials grant type
+grails.plugin.springsecurity.oauthProvider.defaultClientConfig.authorizedGrantTypes = ["authorization_code", "refresh_token", "client_credentials"]
+grails.plugin.springsecurity.oauthProvider.defaultClientConfig.authorities = ["ROLE_CLIENT"]
+
+// Enable HTTP Basic for the access token request URL
+grails.plugin.springsecurity.useBasicAuth = true
+grails.plugin.springsecurity.basic.realmName = "Annotopia"
+grails.plugin.springsecurity.filterChain.chainMap = [
+	'/oauth/token': 'JOINED_FILTERS,-exceptionTranslationFilter',
+	'/**': 'JOINED_FILTERS,-basicAuthenticationFilter,-basicExceptionTranslationFilter'
 ]

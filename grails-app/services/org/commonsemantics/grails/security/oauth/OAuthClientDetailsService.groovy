@@ -1,6 +1,9 @@
-package org.commonsemantics.grails.security.oauth
+package org.commonsemantics.grails.security.oauth;
 
 import org.commonsemantics.grails.systems.model.SystemApi;
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.BaseClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -20,6 +23,9 @@ class OAuthClientDetailsService implements ClientDetailsService {
 	public ClientDetails loadClientByClientId(final String clientId) throws ClientRegistrationException {
 		// check if the passed client id is actually the username (overcome a bug)
 		String requestClientId = getRequestClientId( );
+		if(requestClientId == null) {
+			requestClientId = SecurityContextHolder.getContext( ).getAuthentication( ).getName( );
+		}
 		if(!clientId.equals(requestClientId)) {
 			// override the username and search using the actual client id
 			BaseClientDetails client = findSystemApiByClientId(requestClientId);
@@ -54,6 +60,11 @@ class OAuthClientDetailsService implements ClientDetailsService {
 				grants.add(grant);
 			}
 			client.setAuthorizedGrantTypes(grants);
+			
+			// add the authorities
+			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(1);
+			authorities.add(new SimpleGrantedAuthority("ROLE_CLIENT"));
+			client.setAuthorities(authorities);
 			
 			return client;
 		}
