@@ -59,7 +59,8 @@ class OAuthTokenStore implements TokenStore {
 	public OAuth2AccessToken getAccessToken(final OAuth2Authentication authentication) {
 		// search the database for the links
 		User user = User.findByUsername(authentication.getName( ));
-		SystemApi system = SystemApi.findByShortName(getRequestClientId( ));
+		String clientId = authentication.getAuthorizationRequest( ).getClientId( );
+		SystemApi system = SystemApi.findByShortName(clientId);
 		
 		// find the access token
 		OAuthStoredAccessToken accessToken = OAuthStoredAccessToken.findBySystemAndUser(system, user);
@@ -166,7 +167,8 @@ class OAuthTokenStore implements TokenStore {
 		
 		// search the database for the links
 		User user = User.findByUsername(authentication.getName( ));
-		SystemApi system = SystemApi.findByShortName(getRequestClientId( ));
+		String clientId = authentication.getAuthorizationRequest( ).getClientId( );
+		SystemApi system = SystemApi.findByShortName(clientId);
 		
 		// create the database token
 		OAuthStoredAccessToken dbToken = new OAuthStoredAccessToken(
@@ -193,11 +195,18 @@ class OAuthTokenStore implements TokenStore {
 	public void storeRefreshToken(final OAuth2RefreshToken token, final OAuth2Authentication authentication) {
 		// find the access token
 		User user = User.findByUsername(authentication.getName( ));
-		SystemApi system = SystemApi.findByShortName(getRequestClientId( ));
+		String clientId = authentication.getAuthorizationRequest( ).getClientId( );
+		SystemApi system = SystemApi.findByShortName(clientId);
 		OAuthStoredAccessToken accessToken = OAuthStoredAccessToken.findBySystemAndUser(system, user);
 		storeRefreshToken(token, accessToken, system, user, authentication);
 	}
 
+	/** Store a refresh token with the given parameters.
+	 * @param token The refresh token instance to store.
+	 * @param accessToken The access token this refresh token belongs to.
+	 * @param system The SystemApi that this token belongs to.
+	 * @param user The user that this token belongs to.
+	 * @param authentication The authentication that allowed this token to be generated. */
 	public void storeRefreshToken(final OAuth2RefreshToken token, final OAuthStoredAccessToken accessToken,
 		final SystemApi system, final User user, final OAuth2Authentication authentication)
 	{
@@ -248,22 +257,6 @@ class OAuthTokenStore implements TokenStore {
 	private OAuth2RefreshToken createRefreshToken(final OAuthStoredRefreshToken dbToken) {
 		DefaultOAuth2RefreshToken token = new DefaultOAuth2RefreshToken(dbToken.getToken( ));
 		return token;
-	}
-	
-	/** Extract the client id value from the original request.
-	 * @return The client id extracted from the original request. */
-	private String getRequestClientId( ) {
-		RequestAttributes attributes = RequestContextHolder.getRequestAttributes( );
-		String queryStr = (String)attributes.getAttribute("javax.servlet.forward.query_string", RequestAttributes.SCOPE_REQUEST);
-		String[ ] parts = queryStr.split("&");
-		for(String s : parts) {
-			if(s.contains("client_id")) {
-				parts = s.split("=");
-				return parts[1].trim( );
-			}
-		}
-		
-		return null;
 	}
 
 };

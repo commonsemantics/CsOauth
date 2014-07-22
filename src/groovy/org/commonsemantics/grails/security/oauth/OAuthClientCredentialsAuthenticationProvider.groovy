@@ -2,13 +2,13 @@ package org.commonsemantics.grails.security.oauth;
 
 import org.commonsemantics.grails.systems.model.SystemApi;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.NoSuchClientException;
-import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator.UnauthorizedException;
 
 /** Authentication Provider to catch the client credentials authentication during the user
  * access token creation procedure.
@@ -38,7 +38,7 @@ class OAuthClientCredentialsAuthenticationProvider implements AuthenticationProv
 				return new UsernamePasswordAuthenticationToken(clientId, secret, auths);
 			}
 		}
-		throw new UnauthorizedException("Unable to authenticate with provided client id and secret.");
+		throw new BadCredentialsException("Unable to authenticate with provided client id and secret.");
 	}
 
 	@Override
