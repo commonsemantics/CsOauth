@@ -94,5 +94,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/CsSystems"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/CsUsers"/>
 	<classpathentry kind="con" path="org.grails.ide.eclipse.core.CLASSPATH_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
 	<classpathentry kind="output" path="target-eclipse/classes"/>
 </classpath>
