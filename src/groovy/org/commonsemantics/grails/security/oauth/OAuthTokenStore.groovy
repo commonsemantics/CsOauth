@@ -143,8 +143,8 @@ class OAuthTokenStore implements TokenStore {
 		if(refreshToken != null) {
 			OAuthStoredAccessToken accessToken = OAuthStoredAccessToken.findById(refreshToken.getAccessTokenId( ));
 			if(accessToken != null) {
-				accessToken.delete( );
 				refreshToken.delete( );
+				accessToken.delete( );
 			}
 		}
 	}
