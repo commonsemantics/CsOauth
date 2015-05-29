@@ -38,7 +38,7 @@ grails.plugin.springsecurity.providerNames = [
 ]
 
 // Enable client credentials grant type
-grails.plugin.springsecurity.oauthProvider.defaultClientConfig.authorizedGrantTypes = ["authorization_code", "refresh_token", "client_credentials"]
+grails.plugin.springsecurity.oauthProvider.defaultClientConfig.authorizedGrantTypes = ["authorization_code", "refresh_token", "client_credentials", "password"]
 grails.plugin.springsecurity.oauthProvider.defaultClientConfig.authorities = ["ROLE_CLIENT"]
 
 // Enable HTTP Basic for the access token request URL
